@@ -1,12 +1,11 @@
-import express  from 'express';
 
-const port = 3000;
-const app = express();
+import app from './app';
+import { config } from './config';
+import { checkDataBaseConnection } from './db/prisma';
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+const port = config.port; 
 
-app.listen(port, () => {
+app.listen(port, async () => {
+    await checkDataBaseConnection();
     console.log(`Example app listening on port http://localhost:${port}`);
 });
