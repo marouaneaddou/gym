@@ -1,0 +1,16 @@
+
+.env
+
+node_modules
+
+dist/
+
+.DS_Storex
+
+.vscode/
+
+*.tsbuildinfo
+
+/src/generated/prisma
+
+test.http
