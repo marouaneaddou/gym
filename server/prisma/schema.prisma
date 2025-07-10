@@ -13,3 +13,19 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Equipment {
+  id        Int             @id @default(autoincrement())
+  name      String 
+  type      String
+  status    EquipmentStatus @default(working)
+  brand     String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+enum EquipmentStatus  {
+  working 
+  maintenance 
+  broken
+}
