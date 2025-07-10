@@ -20,18 +20,5 @@ export const updateEquipment = z.object({
     status : statusEquipment,
 });
 
-// export const requestById = z.object({
-//     id : z.string()
-//         .openapi({
-//             param : {
-//                 in : 'path',
-//                 name : 'id', 
-//             },
-//         }),
-// });
-
 export type newEquipment    =   z.infer<typeof createNewEquipmentSchema>;
 export type   status        =   z.infer<typeof updateEquipment>;
-// export type paramId = z.infer<typeof requestById>
-
-// .regex(/^\d+$'/, 'Id you must number') 

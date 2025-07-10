@@ -29,3 +29,13 @@ enum EquipmentStatus  {
   maintenance 
   broken
 }
+
+model Plans {
+    id        Int             @id @default(autoincrement())
+    duration  Int 
+    price     Int
+    max_days_per_week Int 
+    is_vip    Boolean    @default(false)
+    type      String 
+    description String
+}

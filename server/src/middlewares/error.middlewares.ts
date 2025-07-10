@@ -10,7 +10,7 @@ export const errorHandler = (
     res: Response,
     _next: NextFunction ): void => {
 
-    console.error(err);
+    // console.error("error", err);
 
     const statusCode = err.statusCode ?? 500;
     const status = err.status ?? 'error';
