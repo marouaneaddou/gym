@@ -3,7 +3,10 @@ import { z } from 'zod';
 
 extendZodWithOpenApi(z);
 
-
+export const loginSchema = z.object({
+    password : z.string().min(8).max(32),
+    email    : z.string().email().max(255),
+}).strict();
 
 export const passwordShemas = z.string()
     .min(8, { message : 'password must contain 8 characters' })
@@ -38,11 +41,32 @@ export const passwordShemas = z.string()
 export const registerSchema = z.object({
     firstName : z.string().min(3).max(20),
     lastName  : z.string().min(3).max(20),
-    number    : z.string().min(10).max(15).
+    phone     : z.string().min(10).max(15).
         regex(/^\+?\d{7,15}$/, 'Invalid phone number format. Must be digits only, optional leading +, length 10-15.'),
     cin : z.string().regex(/^[A-Z] [A-Za-z0-9]{7}$/,
         'Invalid CIN format. Must be one uppercase letter, one space, then 7 letters or digits.'),
     email : z.string().email(),
     password : passwordShemas,
     confirmPassword : passwordShemas,
+}).strict();
+
+
+export const account = z.object({
+    name            : z.string().min(3).max(50),
+    phone          : z.string().min(10).max(15).
+        regex(/^\+?\d{7,15}$/, 'Invalid phone number format. Must be digits only, optional leading +, length 10-15.'),
+    email           : z.string().email(),
+    password        : passwordShemas,
+    confirmPassword : passwordShemas,
+}).strict().superRefine((val, ctx) => {
+    if (val.password !== val.confirmPassword) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Password is not the same as confirm password',
+            path: ['confirmPassword'],
+        });
+    }
 });
+
+export type   aneAccount      =    z.infer<typeof account>; 
+export type   login        =   z.infer<typeof loginSchema>; 

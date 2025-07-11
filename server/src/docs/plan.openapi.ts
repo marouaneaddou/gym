@@ -2,7 +2,6 @@
 import z                            from 'zod';
 
 import { createNewPlansSchema, updatePlansSchema } from '../schemas/plans.schema';
-import { statusEquipment }          from '../types/schema.type';
 import { requestById } from '../utils/schema.util';
 import { registry }                 from './setup';
 
@@ -12,7 +11,7 @@ registry.registerPath({
     path: '/api/plan',
     description: 'create new plan',
     summary: 'New plan',
-    tags : ['plans'],
+    tags : ['Plans'],
     request : {
         
         body : {
@@ -31,6 +30,12 @@ registry.registerPath({
         401 : {
             description : 'Invalid token',
         },
+        400 : {
+            description : 'Invalid data',
+        },
+        404 : {
+            description : 'Equipment not found',
+        },
     },
 
 });
@@ -40,7 +45,7 @@ registry.registerPath({
     path: '/api/plan/:id',
     description: 'update plan using id',
     summary: 'Update plan',
-    tags : ['plans'],
+    tags : ['Plans'],
     request : {
         params: requestById,
         body : {
@@ -61,6 +66,38 @@ registry.registerPath({
         401 : {
             description : 'Invalid token',
         },
+        400 : {
+            description : 'Invalid data',
+        },
+        404 : {
+            description : 'Equipment not found',
+        },
+    },
+
+});
+
+registry.registerPath({
+    method: 'delete',
+    path: '/api/plan/:id',
+    description: 'Delete one plan using id',
+    summary: 'delete plan',
+    tags : ['Plans'],
+    request : {
+        params: requestById,
+    },
+    responses: {
+        201: {
+            description: 'PLan successfully deleted',
+        },
+        401 : {
+            description : 'Invalid token',
+        },
+        400 : {
+            description : 'Invalid data',
+        },
+        404 : {
+            description : 'Equipment not found',
+        },
     },
 
 });
@@ -70,9 +107,9 @@ registry.registerPath({
     path: '/api/plan',
     description: 'Get all plans',
     summary: 'plans',
-    tags : ['plans'],
+    tags : ['Plans'],
     responses: {
-        201: {
+        200: {
             description: 'PLan successfully updated',
             content : {
                 'application/json' : {

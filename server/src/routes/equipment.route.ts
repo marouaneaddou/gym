@@ -3,7 +3,6 @@ import Router                    from 'express';
 
 import { deleteEquipment, getAllequipment, newEquipment, 
     updateStatusOfequipment }   from '../controllers/equipment.controller';
-import { errorHandler } from '../middlewares/error.middlewares';
 import { validatorBody, 
     validatorParam }            from '../middlewares/validator.middlewares';
 import { createNewEquipmentSchema,
@@ -21,7 +20,5 @@ router.post('/', validatorBody( createNewEquipmentSchema ), tryCatch( newEquipme
 router.patch('/:id', validatorBody( updateEquipment ), validatorParam( requestById ), tryCatch( updateStatusOfequipment ));
 router.delete('/:id', validatorParam( requestById ), tryCatch( deleteEquipment ));
 
-
-router.use(errorHandler);
 
 export default router;
