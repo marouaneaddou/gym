@@ -1,21 +1,37 @@
 import { Request, Response } from 'express';
 
-import { createNewPlans, deletePlansService } from '../services/plans.service';
+import { createNewPlans, deletePlansService, getAllPlans, updatePlansService } from '../services/plans.service';
 
-export const newPLans =  async ( req : Request, res : Response ) => {
+
+export const allPLan =  async ( req : Request, res : Response ) => {
+    const plans = await getAllPlans( );
+    res.status(200).json( plans );
+};
+
+export const newPLan =  async ( req : Request, res : Response ) => {
     const body = req.body;
     await createNewPlans( body );
     res.status(201).json({
         'status' : 'success',
-        message : 'New plans created successfully',
+        message : 'New plan created successfully',
     });
 };
 
-export const deletePlans = async ( req : Request, res : Response ) => {
+export const deletePlan = async ( req : Request, res : Response ) => {
     const param = req.params;
     await deletePlansService( Number(param.id) );
     res.status(200).json({
         'status' : 'success',
-        message : 'equipment successfully deleted',
+        message : 'Plan successfully deleted',
+    });
+};
+
+export const updatePlan = async ( req : Request, res : Response ) => {
+    const param = req.params;
+    const body = req.body;
+    await updatePlansService( body, Number(param.id) );
+    res.status(200).json({
+        'status' : 'success',
+        message : 'Plan successfully updated',
     });
 };
