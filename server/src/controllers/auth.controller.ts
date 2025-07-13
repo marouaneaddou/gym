@@ -16,7 +16,6 @@ export const login = async ( req : Request, res : Response ) => {
         const accessTokenPayload = {
             exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
         };
-        
         try { 
             await bcrypt.compare( body.password, checkCriedential.password );
         }
@@ -31,27 +30,30 @@ export const login = async ( req : Request, res : Response ) => {
             token : token,
         });
     }
+    else {
+        throw new AppError( 'Invalid email or password', 401);
+    }
 };
 
-// export const createAccount = async ( req : Request, res : Response ) => {
-//     const body = req.body;
-//     const count = await prisma.admin.count({
-//     });
-//     if ( count == 1 ) {
-//         throw new AppError( 'Not can create a new admin accounts', 400);
-//     }
-//     const passwordHash = await bcrypt.hash(body.password, 10);
+export const createAccount = async ( req : Request, res : Response ) => {
+    const body = req.body;
+    const count = await prisma.admin.count({
+    });
+    if ( count == 1 ) {
+        throw new AppError( 'Not can create a new admin accounts', 400);
+    }
+    const passwordHash = await bcrypt.hash(body.password, 10);
 
-//     await prisma.admin.create({
-//         data : {
-//             password :  passwordHash,
-//             email    :  body.email,
-//             name     :  body.name,
-//             phone    :  body.phone,
-//         },
-//     });
-//     res.status(201).json({
-//         'status' : 'success',
-//         message  : 'Account created successfully',
-//     });
-// };
+    await prisma.admin.create({
+        data : {
+            password :  passwordHash,
+            email    :  body.email,
+            name     :  body.name,
+            phone    :  body.phone,
+        },
+    });
+    res.status(201).json({
+        'status' : 'success',
+        message  : 'Account created successfully',
+    });
+};
