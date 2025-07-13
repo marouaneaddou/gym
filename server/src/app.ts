@@ -1,4 +1,5 @@
 
+import cors             from 'cors';
 import express          from 'express';
 
 import { errorHandler } from './middlewares/error.middlewares';
@@ -8,6 +9,8 @@ import equipmentRoutes  from './routes/equipment.route';
 import planRoutes       from './routes/plans.route';
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
