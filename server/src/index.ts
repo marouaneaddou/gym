@@ -1,7 +1,8 @@
 
 import app                          from './app';
 import { checkConfig, 
-    config }                        from './config';
+    config, 
+    createTempleteSlot }                        from './config';
 import { checkDataBaseConnection }  from './db/prisma';
 import { setupSwagger }             from './docs/setup';
 
@@ -15,4 +16,5 @@ app.listen(port, async () => {
     await checkDataBaseConnection();
     console.log(`Example app listening on port http://localhost:${port}`);
     console.log( `Swagger is running at http://localhost:${port}/docs`);
+    await createTempleteSlot();
 });
