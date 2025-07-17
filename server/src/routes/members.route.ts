@@ -8,6 +8,6 @@ import { tryCatch }         from '../utils/tryCatch';
 
 const router = Route();
 // , 
+router.get('/')
 router.post('/', validatorBody( createNewMemberBody ), tryCatch( newMember ));
-
 export default router;
