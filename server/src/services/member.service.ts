@@ -213,7 +213,6 @@ export const checkSeancesNotFull = async ( days : Days, isVip : boolean ) => {
     }
     
     for (const [id, count] of idsCount) {
-        console.error( count );
         if (
             (isVip && count >= config.capacity_vip) ||
             (!isVip && count >= config.capacity_basic)

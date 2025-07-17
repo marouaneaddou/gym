@@ -77,7 +77,7 @@ function createSlots(openTime: string, closeTime: string, slotDuration: number):
 }
 
 export const dailySlots = createSlots(config.open, config.closed, config.slotDuration);
-console.error( dailySlots );
+// console.error( dailySlots );
 export const createTempleteSlot = async () => {
     const count = await prisma.slotTemplate.count({
 
