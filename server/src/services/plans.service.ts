@@ -17,9 +17,11 @@ export const checkIsExistPlanVIP = async ( ) => (await prisma.plan.findMany({
 }));
 
 export const createNewPlans = async ( body : newPLans )  => {
-    const vip = await checkIsExistPlanVIP();
-    if ( vip.length > 0 ) {
-        throw new AppError( 'Plan VIP is exist you must updated not create new one', 400 );
+    if ( body.is_vip && body.is_vip == true ) {
+        const vip = await checkIsExistPlanVIP();
+        if ( vip.length > 0 ) {
+            throw new AppError( 'Plan VIP is exist you must updated not create new one', 400 );
+        }
     }
     await prisma.plan.create({
         data : {
@@ -29,6 +31,7 @@ export const createNewPlans = async ( body : newPLans )  => {
             description         :   body.description,
             duration            :   body.duration,
             price               :   body.price,
+            seance              :   body.seance,
         },
     });
 };

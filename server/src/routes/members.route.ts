@@ -1,10 +1,13 @@
 
-import Route from 'express';
+import Route                from 'express';
 
-// import { tryCatch } from '../utils/tryCatch';
+import { newMember }        from '../controllers/members.controller';
+import { validatorBody }    from '../middlewares/validator.middlewares';
+import { createNewMemberBody } from '../schemas/members.schema';
+import { tryCatch }         from '../utils/tryCatch';
 
 const router = Route();
-
-// router.post('/members', tryCatch( createNewMember ));
+// , 
+router.post('/', validatorBody( createNewMemberBody ), tryCatch( newMember ));
 
 export default router;

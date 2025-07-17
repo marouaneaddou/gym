@@ -2,6 +2,7 @@
 
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 import z                        from 'zod';
+
 import { daysOfWeek } from '../utils';
 
 extendZodWithOpenApi(z);

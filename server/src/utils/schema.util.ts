@@ -6,6 +6,7 @@ extendZodWithOpenApi(z);
 
 export const requestById = z.object({
     id : z.string()
+        .regex(/^\d+$/, { message: 'Id must contain only numbers' })
         .openapi({
             param : {
                 in : 'path',

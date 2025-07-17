@@ -41,7 +41,7 @@ export const passwordShemas = z.string()
 export const registerSchema = z.object({
     firstName : z.string().min(3).max(20),
     lastName  : z.string().min(3).max(20),
-    phone     : z.string().min(10).max(15).
+    phone     : z.string().
         regex(/^\+?\d{7,15}$/, 'Invalid phone number format. Must be digits only, optional leading +, length 10-15.'),
     cin : z.string().regex(/^[A-Z] [A-Za-z0-9]{7}$/,
         'Invalid CIN format. Must be one uppercase letter, one space, then 7 letters or digits.'),

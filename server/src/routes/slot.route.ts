@@ -1,12 +1,13 @@
 
-import Router, { Request, Response } from 'express';
+import Router               from 'express';
 
-import { dailySlots } from '../config';
-import prisma from '../db/prisma';
-import { validatorParam, validatorQuery } from '../middlewares/validator.middlewares';
-import { is_vipSchema, requestByDay } from '../schemas/slot.schema';
-import { tryCatch } from '../utils/tryCatch';
-import { getSLotUsingDay } from '../controllers/slot.controller';
+import { getSLotUsingDay }  from '../controllers/slot.controller';
+import { validatorParam, 
+    validatorQuery }        from '../middlewares/validator.middlewares';
+import { is_vipSchema, 
+    requestByDay }          from '../schemas/slot.schema';
+import { tryCatch }         from '../utils/tryCatch';
+
 
 
 const router = Router();

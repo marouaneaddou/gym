@@ -8,7 +8,7 @@ import { registry }                 from './setup';
 
 registry.registerPath({
     method: 'post',
-    path: '/api/plan',
+    path: '/api/plans',
     description: 'create new plan',
     summary: 'New plan',
     tags : ['Plans'],
@@ -42,7 +42,7 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'put',
-    path: '/api/plan/:id',
+    path: '/api/plans/:id',
     description: 'update plan using id',
     summary: 'Update plan',
     tags : ['Plans'],
@@ -78,7 +78,7 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'delete',
-    path: '/api/plan/:id',
+    path: '/api/plans/:id',
     description: 'Delete one plan using id',
     summary: 'delete plan',
     tags : ['Plans'],
@@ -104,7 +104,7 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'get',
-    path: '/api/plan',
+    path: '/api/plans',
     description: 'Get all plans',
     summary: 'plans',
     tags : ['Plans'],

@@ -9,7 +9,7 @@ import { registry }                 from './setup';
 
 registry.registerPath({
     method: 'post',
-    path: '/api/equipment',
+    path: '/api/equipments',
     description: 'create new equipment using name, type, status, brand',
     summary: 'New equipment',
     tags : ['Equipment'],
@@ -43,7 +43,7 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'patch',
-    path: '/api/equipment/:id',
+    path: '/api/equipments/:id',
     description: 'change status of equipment',
     summary: 'Update status',
     tags : ['Equipment'],
@@ -79,7 +79,7 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'get',
-    path: '/api/equipment',
+    path: '/api/equipments',
     description: 'Get all  equipment',
     summary: 'all equipment',
     tags : ['Equipment'],
@@ -108,7 +108,7 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'delete',
-    path: '/api/equipment/:id',
+    path: '/api/equipments/:id',
     description: 'delete one equipment using id',
     summary: 'delete equipment',
     tags : ['Equipment'],

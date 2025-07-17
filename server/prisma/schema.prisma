@@ -31,14 +31,15 @@ enum EquipmentStatus  {
 }
 
 model Plan {
-    id        Int             @id @default(autoincrement())
-    duration  Int 
-    price     Float
+    id                Int             @id @default(autoincrement())
+    duration          Int 
+    price             Float
     max_days_per_week Int 
-    is_vip    Boolean    @default(false)
-    type      String 
-    memberships  Membership[]
-    description String
+    is_vip            Boolean    @default(false)
+    type              String 
+    memberships       Membership[]
+    description       String
+    seance            Int
 }
 
 model Admin {
@@ -55,7 +56,7 @@ model User {
   id            Int             @id @default(autoincrement())
   firstName     String   
   lastName      String   
-  email         String
+  email         String        @unique
   phone         String
   gender        gender 
   nationalId    String         @unique  
@@ -99,7 +100,6 @@ model Payment {
   membershipId  Int
   amount        Float
   paymentDate   DateTime     @default(now())
-  note          String?
 }
 
 model SlotTemplate {
@@ -110,8 +110,8 @@ model SlotTemplate {
   capacityBasic Int
   capacityVip   Int
   userSlots     UserSlot[]
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model UserSlot {
