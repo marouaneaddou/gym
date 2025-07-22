@@ -21,9 +21,11 @@ type Payment = {
     amount       :  number,
 }
 
+export type day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+
 type Slot = {
     seance :    string[],
-    day    :    'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+    day    :   day
 }
 
 type Slots = Slot[]

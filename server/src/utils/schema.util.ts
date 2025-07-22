@@ -15,5 +15,7 @@ export const requestById = z.object({
         }),
 });
 
+export const days = z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+
 export type paramId = z.infer<typeof requestById>
 

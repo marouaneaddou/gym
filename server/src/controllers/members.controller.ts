@@ -4,16 +4,18 @@ import { Request,
     Response }          from 'express';
 import { StatusCodes }  from 'http-status-codes';
 
-import { checkSeancesNotFull, 
+import prisma           from '../db/prisma';
+import { 
     createMembership, 
     createUser, 
-    createUserSlot, 
-    getPLanData, 
+    getAllPayment, 
+    getPLanData,
+    latestDate,
     newPayment, 
-    userInfo, 
-    validateSeance }    from '../services/member.service';
+    saveDbUserSession, 
+    userById, 
+    userInfo }    from '../services/member.service';
 import { AppError }     from '../utils/appError';
-
 
 export const newMember = async ( req : Request, res : Response ) => {
     const body = req.body;
@@ -21,19 +23,19 @@ export const newMember = async ( req : Request, res : Response ) => {
     if ( userChcek != null ) 
         throw new AppError( 'User already exists', 409 );
     // Check slot days
-    const plan =  await getPLanData( Number(body.planId));
-    // console.error( plan.max_days_per_week)
-    if ( body.slot.length != plan.max_days_per_week ) {
-        throw new AppError( 'Invalid day plan: slot count does not match max days per week', StatusCodes.BAD_REQUEST );
-    }
-    if ( body.pricePaide != plan.price ) {
-        throw new AppError( `Payment mismatch: expected ${plan.price}`, StatusCodes.BAD_REQUEST);
-    }
+    // const plan =  await getPLanData( Number(body.planId));
+    // // console.error( plan.max_days_per_week)
+    // if ( body.slot.length != plan.max_days_per_week ) {
+    //     throw new AppError( 'Invalid day plan: slot count does not match max days per week', StatusCodes.BAD_REQUEST );
+    // }
+    // if ( body.pricePaide != plan.price ) {
+    //     throw new AppError( `Payment mismatch: expected ${plan.price}`, StatusCodes.BAD_REQUEST);
+    // }
     // check seance date is exist and get ids of seance
-    const idsSeanceOfDay = await validateSeance( body.slot, plan.seance );
+    // const idsSeanceOfDay = await validateSeance( body.slot, plan.seance );
 
     // check seance is not full
-    await checkSeancesNotFull( idsSeanceOfDay, plan.is_vip );
+    // await checkSeancesNotFull( idsSeanceOfDay, plan.is_vip );
     // Create new member
     const user = await createUser( {
         firstName   :   body.firstName,
@@ -57,86 +59,99 @@ export const newMember = async ( req : Request, res : Response ) => {
         amount       :  body.pricePaide,
     });
     // member slots booked 
-    await createUserSlot( {
-        seanceIds    :   idsSeanceOfDay,
-        userId       :   user.id,
-        plan         :   plan,
-    });
+    // await createUserSlot( {
+    //     seanceIds    :   idsSeanceOfDay,
+    //     userId       :   user.id,
+    //     plan         :   plan,
+    // });
 
     res.status(StatusCodes.CREATED).json({
-        'status' : 'success',
-        message : 'User slots have been booked successfully',
+        message     : 'Account member created successfully',
+        userId      :   user.id,
     });
 
+};
 
+// export const newMember = async ( req : Request, res : Response ) => {
+//     const body = req.body;
+//     const userChcek = await userInfo( body.email, body.nationalId );
+//     if ( userChcek != null ) 
+//         throw new AppError( 'User already exists', 409 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//     const result = await createNewMember({
-//   "firstName": "John",
-//   "lastName": "Doe",
-//   "email": "john.doe@example.com",
-//   "phone": "+212612345678",
-//   "nationalId": "A 1BC23D4",
-//   "gender": "male",
-//   "slot": [
-//     {
-//       "day": "Monday",
-//       "seance": ["06:00"]
-//     },
-//     {
-//       "day": "Tuesday",
-//       "seance": ["06:00"]
-//     },
-//     {
-//       "day": "Friday",
-//       "seance": ["06:00"]
-//     },
-//     {
-//       "day": "Sunday",
-//       "seance": ["06:00"]
-//     }
-//   ],
-//   "startDate": "2025-07-17",
-//   "planId": 2,
-//   "pricePaide": 200 
 // }
-// )
-    // await createNewMember( body );
-    //   const resilt = await validateSeance( [
-    //   {
-    //     day: "Monday",
-    //     seance: ["07:30", "07:30"]
-    //   },
-    //   {
-    //     day: "Tuesday",
-    //     seance: ["13:30"]
-    //   }
-    // ], 2);
-    // return res.json( result);
+
+export const getAllMmber = async ( req : Request, res : Response ) => {
+    const member = await prisma.user.findMany({
+
+    });
+    res.status( StatusCodes.OK ).json( member );
+
+};
+
+export const addUserToSession = async ( req : Request, res : Response ) => {
+
+    const { id } = req.params;
+    const body = req.body;
+    const user = await userById( Number( id ) );
+
+    if ( ! user ) {
+        throw new AppError( 'User not found', 404 );
+    }
+    
+    const plan =  await getPLanData( user.memberships[0].planId );
+    // console.error( plan.max_days_per_week)
+    if ( body.length != plan.max_days_per_week ) {
+        throw new AppError( 'Invalid session count in week', StatusCodes.BAD_REQUEST );
+    }
+    await saveDbUserSession( user.id, body, plan.is_vip );
+
+    res.status( StatusCodes.CREATED ).json({
+        status : 'Success',
+        message : 'Session user booked successfully',
+    });
+};
+
+export const getAllPaymentUser = async (  req : Request, res : Response ) => {
+    const id = Number(req.params.id);
+
+    const user = await userById( id );
+    if ( !user ) 
+        throw new AppError( 'User not found', 404 );
+    const payment = await getAllPayment( id );
+
+    return res.status( StatusCodes.OK).json( payment );
+};
+
+export const getSlotsUser = async ( req : Request, res : Response ) => {
+    const id = Number(req.params.id);
+
+    const user = await userById( id );
+    if ( !user ) 
+        throw new AppError( 'User not found', 404 );
+
+    let date;
+
+    if ( req.query.latestMembership && req.query.latestMembership === 'true' ) {
+        const membersheep = await latestDate( id );
+        date = membersheep?.date;
+    }
+    console.error( date );
+    const userSLot = await prisma.userSlot.findMany({
+        where : {
+            date : date,
+            userId : id,
+        },
+        select : {
+            slotTemplate : {
+                select : {
+                    dayOfWeek : true,
+                    startTime : true,
+                    endTime     : true,
+                },
+            },
+            isVip : true,
+        },
+    });
+    return res.status( StatusCodes.OK).json( userSLot );
+    // res.send("test")
 };

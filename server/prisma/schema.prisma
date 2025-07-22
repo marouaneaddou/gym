@@ -61,7 +61,8 @@ model User {
   gender        gender 
   nationalId    String         @unique  
   memberships   Membership[] 
-  userSlots     UserSlot[]      
+  userSlots     UserSlot[]   
+  session       TrainerSession[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
@@ -71,6 +72,38 @@ enum gender {
   female
 }
 
+// 
+model Session {
+  id           Int          @id @default(autoincrement())
+  user         TrainerSession[]
+  startTime    Int
+  endTime      Int
+  day          Day
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum Day {
+  Monday 
+  Tuesday  
+  Wednesday  
+  Thursday  
+  Friday  
+  Saturday  
+  Sunday
+}
+
+model TrainerSession {
+  trainerId Int
+  sessionId Int
+  createdAt DateTime @default(now())
+  day       Day
+  trainer   User  @relation(fields: [trainerId], references: [id])
+  session   Session  @relation(fields: [sessionId], references: [id])
+  is_vip    Boolean
+  @@id([trainerId, sessionId]) 
+}
+// 
 model Membership {
   id           Int          @id @default(autoincrement())
   user         User         @relation(fields: [userId], references: [id])

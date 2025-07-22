@@ -5,7 +5,7 @@ import { Prisma }       from '@prisma/client';
 import { config, 
     dailySlots }        from '../config';
 import prisma           from '../db/prisma';
-import { Days, 
+import { day, Days, 
     MembershipData,
     Payment,
     Slots,
@@ -13,6 +13,27 @@ import { Days,
     UserSLot,
 }                       from '../types/member.type';
 import { AppError }     from '../utils/appError';
+
+export const userById = async ( id : number ) => ( await prisma.user.findUnique({
+    where : {
+        id : id,
+    },
+    include: {
+        memberships: {
+            orderBy: {
+                createdAt: 'desc', 
+            },
+            take: 1, 
+        },
+    },
+}));
+
+
+export const latestDate = async ( id : number ) => ( await prisma.userSlot.findFirst({
+    where: { userId: id },
+    orderBy: { date: 'desc' },
+    select: { date: true },
+}));
 
 export const userInfo = async ( email : string, nationalId : string ) => {
 
@@ -191,6 +212,57 @@ export const validateSeance = async ( body : Slots, numberSeance : number ) => {
     return result;
 };
 
+export const saveDbUserSession = async ( userId : number,
+    userSessions : { id : number, day : day}[], is_vip : boolean) => {
+
+    const days : day[] = [];
+    const data : {trainerId : number,
+            sessionId : number,
+            day       : day
+            is_vip    : boolean }[]= [];
+    const ids = userSessions.map( ( session : { id : number, day : day} ) => {
+        data.push({
+            trainerId : userId,
+            sessionId : session.id,
+            day       : session.day,
+            is_vip    : is_vip,
+        });
+        days.push( session.day);
+        return session.id;
+    });
+
+    const sessions = await prisma.session.findMany({
+        where : {
+            id : { in : ids },
+            day : { in : days },
+        },
+        include: {
+            user: {  
+                select: {
+                    trainerId: true,  
+                },
+            },
+        },
+    });
+
+    if ( sessions.length != userSessions.length ) {
+        throw new AppError( 'Session not found', 404 );
+    }
+    // Check session not full 
+    for ( const session of sessions ) {
+        if ((is_vip == true && session.user.length >= config.capacity_vip) 
+            || (is_vip == false && session.user.length >= config.capacity_basic)) {
+
+            throw new AppError( `Session of day ${session.day} is full`, 400 );
+        }
+    }
+    
+    await prisma.trainerSession.createMany({
+        data : data,
+    });
+
+};
+
 export const checkSeancesNotFull = async ( days : Days, isVip : boolean ) => {
     const allIds = days.flatMap(day => day.ids);
 
@@ -262,3 +334,25 @@ export const createUserSlot = async ( body : UserSLot ) => {
     }
 };
 
+export const getAllPayment = async ( id : number ) => {
+
+    const payment = await prisma.membership.findMany({
+        where : {
+            userId : id,
+        },
+        select : {
+            startDate : true,
+            endDate : true,
+            payment : {
+                select : {
+                    amount : true,
+                    paymentDate : true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    });
+    return payment;
+};

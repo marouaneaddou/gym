@@ -11,7 +11,7 @@ const port = config.port;
 
 setupSwagger( app );
 
-app.listen(port, async () => {
+app.listen(port, '0.0.0.0', async () => {
     checkConfig();
     await checkDataBaseConnection();
     console.log(`Example app listening on port http://localhost:${port}`);
