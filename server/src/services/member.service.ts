@@ -3,14 +3,13 @@
 import { Prisma }       from '@prisma/client';
 
 import { config, 
-    dailySlots }        from '../config';
+    // dailySlots 
+}                       from '../config';
 import prisma           from '../db/prisma';
-import { day, Days, 
+import { day, 
     MembershipData,
     Payment,
-    Slots,
     UserInfo,
-    UserSLot,
 }                       from '../types/member.type';
 import { AppError }     from '../utils/appError';
 
@@ -29,11 +28,11 @@ export const userById = async ( id : number ) => ( await prisma.user.findUnique(
 }));
 
 
-export const latestDate = async ( id : number ) => ( await prisma.userSlot.findFirst({
-    where: { userId: id },
-    orderBy: { date: 'desc' },
-    select: { date: true },
-}));
+// export const latestDate = async ( id : number ) => ( await prisma.userSlot.findFirst({
+//     where: { userId: id },
+//     orderBy: { date: 'desc' },
+//     select: { date: true },
+// }));
 
 export const userInfo = async ( email : string, nationalId : string ) => {
 
@@ -120,97 +119,97 @@ export const newPayment = async ( body : Payment ) => {
 };
 
 
-export const validateSeance = async ( body : Slots, numberSeance : number ) => {
-    const seanceDay = [];
+// export const validateSeance = async ( body : Slots, numberSeance : number ) => {
+//     const seanceDay = [];
 
-    // check seance date is valid
-    for ( const day of body ) {
-        if ( day.seance.length > numberSeance ) 
-            throw new AppError(`Each day must have exactly ${numberSeance} seances`, 400);
-        for ( const seance of day.seance ) {
-            const slot = dailySlots.find(slot => slot.startTime === seance);
-            if (!slot) {
-                throw new AppError(`Invalid seance start time: ${seance}`, 400);
-            }
-            seanceDay.push(`${day.day}_${seance}`);
-        }
-    }
+//     // check seance date is valid
+//     for ( const day of body ) {
+//         if ( day.seance.length > numberSeance ) 
+//             throw new AppError(`Each day must have exactly ${numberSeance} seances`, 400);
+//         for ( const seance of day.seance ) {
+//             const slot = dailySlots.find(slot => slot.startTime === seance);
+//             if (!slot) {
+//                 throw new AppError(`Invalid seance start time: ${seance}`, 400);
+//             }
+//             seanceDay.push(`${day.day}_${seance}`);
+//         }
+//     }
 
-    if ( new Set(seanceDay).size != seanceDay.length )
-        throw new AppError('Do not use duplicate seance', 400);
-    // get all seance data
-    // example of data fetched from db 
-    // [
-    //      { dayOfWeek: 'Monday', startTime: '07:30' },
-    //      { dayOfWeek: 'Monday', startTime: '19:30' },
-    //      { dayOfWeek: 'Tuesday', startTime: '13:30' }
-    // ]
-    const slots = await prisma.slotTemplate.findMany({
-        where : {
-            OR : Array.from(seanceDay).map( (pair : string ) => {
-                const [dayOfWeek, startTime] = pair.split('_');
-                return { dayOfWeek, startTime };
-            }),
-        },
-        select : {
-            id          :   true,
-            dayOfWeek   :   true,
-            startTime   :   true,
-        },
-    });
+//     if ( new Set(seanceDay).size != seanceDay.length )
+//         throw new AppError('Do not use duplicate seance', 400);
+//     // get all seance data
+//     // example of data fetched from db 
+//     // [
+//     //      { dayOfWeek: 'Monday', startTime: '07:30' },
+//     //      { dayOfWeek: 'Monday', startTime: '19:30' },
+//     //      { dayOfWeek: 'Tuesday', startTime: '13:30' }
+//     // ]
+//     const slots = await prisma.slotTemplate.findMany({
+//         where : {
+//             OR : Array.from(seanceDay).map( (pair : string ) => {
+//                 const [dayOfWeek, startTime] = pair.split('_');
+//                 return { dayOfWeek, startTime };
+//             }),
+//         },
+//         select : {
+//             id          :   true,
+//             dayOfWeek   :   true,
+//             startTime   :   true,
+//         },
+//     });
 
-    // Build lookup map
-    const slotsMap = new Map<string, number>();
-    for (const slot of slots) {
-        slotsMap.set(`${slot.dayOfWeek}_${slot.startTime}`, slot.id);
-    }
+//     // Build lookup map
+//     const slotsMap = new Map<string, number>();
+//     for (const slot of slots) {
+//         slotsMap.set(`${slot.dayOfWeek}_${slot.startTime}`, slot.id);
+//     }
 
-    // Build result
-    const result: Days = [];
-    for (const day of body) {
-        const seanceIds: number[] = [];
-        for (const seance of day.seance) {
-            const id = slotsMap.get(`${day.day}_${seance}`);
-            if (!id)
-                throw new AppError(`Invalid seance start time : ${seance}`, 400);
-            seanceIds.push(id);
-        }
-        result.push({ day: day.day, ids: seanceIds });
-    }
+//     // Build result
+//     const result: Days = [];
+//     for (const day of body) {
+//         const seanceIds: number[] = [];
+//         for (const seance of day.seance) {
+//             const id = slotsMap.get(`${day.day}_${seance}`);
+//             if (!id)
+//                 throw new AppError(`Invalid seance start time : ${seance}`, 400);
+//             seanceIds.push(id);
+//         }
+//         result.push({ day: day.day, ids: seanceIds });
+//     }
 
-    // const result : Days = [];
+//     // const result : Days = [];
 
-    // for ( const day of body ) {
-    //     if ( day.seance.length != numberSeance ) 
-    //         throw new AppError(`Each day must have exactly ${numberSeance} seances`, 400);
+//     // for ( const day of body ) {
+//     //     if ( day.seance.length != numberSeance ) 
+//     //         throw new AppError(`Each day must have exactly ${numberSeance} seances`, 400);
 
-    //     const seanceIds: number[] = [];
-    //     for ( const seance of day.seance ) {
-    //         const slot = dailySlots.find(slot => slot.startTime === seance);
-    //         if (!slot) {
-    //             throw new AppError(`Invalid seance start time: ${seance}`, 400);
-    //         }
-    //         const seanceDb = await prisma.slotTemplate.findFirst({
-    //             where : {
-    //                 startTime : seance,
-    //                 dayOfWeek : day.day,
-    //             },
-    //             select : {
-    //                 id : true,
-    //             },
-    //         });
-    //         if ( !seanceDb ) 
-    //             throw new AppError(`Invalid seance start time: ${seance}`, 400);
-    //         seanceIds.push( seanceDb?.id );
-    //     }
+//     //     const seanceIds: number[] = [];
+//     //     for ( const seance of day.seance ) {
+//     //         const slot = dailySlots.find(slot => slot.startTime === seance);
+//     //         if (!slot) {
+//     //             throw new AppError(`Invalid seance start time: ${seance}`, 400);
+//     //         }
+//     //         const seanceDb = await prisma.slotTemplate.findFirst({
+//     //             where : {
+//     //                 startTime : seance,
+//     //                 dayOfWeek : day.day,
+//     //             },
+//     //             select : {
+//     //                 id : true,
+//     //             },
+//     //         });
+//     //         if ( !seanceDb ) 
+//     //             throw new AppError(`Invalid seance start time: ${seance}`, 400);
+//     //         seanceIds.push( seanceDb?.id );
+//     //     }
 
-    //     result.push({
-    //         day : day.day,
-    //         ids : seanceIds,
-    //     });
-    // }
-    return result;
-};
+//     //     result.push({
+//     //         day : day.day,
+//     //         ids : seanceIds,
+//     //     });
+//     // }
+//     return result;
+// };
 
 export const saveDbUserSession = async ( userId : number,
     userSessions : { id : number, day : day}[], is_vip : boolean) => {
@@ -256,83 +255,88 @@ export const saveDbUserSession = async ( userId : number,
             throw new AppError( `Session of day ${session.day} is full`, 400 );
         }
     }
-    
-    await prisma.trainerSession.createMany({
-        data : data,
-    });
-
-};
-
-export const checkSeancesNotFull = async ( days : Days, isVip : boolean ) => {
-    const allIds = days.flatMap(day => day.ids);
-
-    const counts = await prisma.userSlot.groupBy({
-        by : ['slotTemplateId'],
-        where : {
-            slotTemplateId: { in : allIds },
-            isVip : isVip,
-        },
-        _count : true,
-    });
-
-
-    if (counts.length === 0) return;
-
-    const idsCount = new Map();
-
-    for ( const item of counts ) {
-        idsCount.set( item.slotTemplateId, item._count);
-    }
-    
-    for (const [id, count] of idsCount) {
-        if (
-            (isVip && count >= config.capacity_vip) ||
-            (!isVip && count >= config.capacity_basic)
-        ) {
-            throw new AppError('The seance is at full capacity', 400);
-        }
-    }
-
-    // for ( const day of days ) {
-    //     for ( const id of day.ids ) {
-    //         const count = await prisma.userSlot.count({
-    //             where : {
-    //                 slotTemplate : {
-    //                     id : id,
-    //                 },
-    //                 isVip : isVip,
-    //             },
-    //         });
-
-    //         if ( isVip == true && count == config.capacity_vip ) 
-    //             throw new AppError('The seance is at full capacity', 400);
-    //         else if ( isVip == false && count == config.capacity_basic )
-    //             throw new AppError('The seance is at full capacity', 400);
-    //     }
-    // }
-
-};
-
-export const createUserSlot = async ( body : UserSLot ) => {
-
-    const date = new Date();
-    const userSlotData = body.seanceIds.flatMap( day => 
-        day.ids.map( id => ({
-            userId          : body.userId,
-            slotTemplateId  : id,
-            isVip : body.plan.is_vip,
-            date  : date,
-        })),
-    );
     try {
-        await prisma.userSlot.createMany({
-            data : userSlotData,
+
+        await prisma.trainerSession.createMany({
+            data : data,
         });
     }
     catch {
-        throw new AppError( 'Eroor in creation user booked slots', 500 );
+        throw new AppError( 'The user has booked this session beforehand', 404 );
     }
+
 };
+
+// export const checkSeancesNotFull = async ( days : Days, isVip : boolean ) => {
+//     const allIds = days.flatMap(day => day.ids);
+
+//     const counts = await prisma.userSlot.groupBy({
+//         by : ['slotTemplateId'],
+//         where : {
+//             slotTemplateId: { in : allIds },
+//             isVip : isVip,
+//         },
+//         _count : true,
+//     });
+
+
+//     if (counts.length === 0) return;
+
+//     const idsCount = new Map();
+
+//     for ( const item of counts ) {
+//         idsCount.set( item.slotTemplateId, item._count);
+//     }
+    
+//     for (const [id, count] of idsCount) {
+//         if (
+//             (isVip && count >= config.capacity_vip) ||
+//             (!isVip && count >= config.capacity_basic)
+//         ) {
+//             throw new AppError('The seance is at full capacity', 400);
+//         }
+//     }
+
+//     // for ( const day of days ) {
+//     //     for ( const id of day.ids ) {
+//     //         const count = await prisma.userSlot.count({
+//     //             where : {
+//     //                 slotTemplate : {
+//     //                     id : id,
+//     //                 },
+//     //                 isVip : isVip,
+//     //             },
+//     //         });
+
+//     //         if ( isVip == true && count == config.capacity_vip ) 
+//     //             throw new AppError('The seance is at full capacity', 400);
+//     //         else if ( isVip == false && count == config.capacity_basic )
+//     //             throw new AppError('The seance is at full capacity', 400);
+//     //     }
+//     // }
+
+// };
+
+// export const createUserSlot = async ( body : UserSLot ) => {
+
+//     const date = new Date();
+//     const userSlotData = body.seanceIds.flatMap( day => 
+//         day.ids.map( id => ({
+//             userId          : body.userId,
+//             slotTemplateId  : id,
+//             isVip : body.plan.is_vip,
+//             date  : date,
+//         })),
+//     );
+//     try {
+//         await prisma.userSlot.createMany({
+//             data : userSlotData,
+//         });
+//     }
+//     catch {
+//         throw new AppError( 'Eroor in creation user booked slots', 500 );
+//     }
+// };
 
 export const getAllPayment = async ( id : number ) => {
 
@@ -356,3 +360,10 @@ export const getAllPayment = async ( id : number ) => {
     });
     return payment;
 };
+
+export const getSessionUser = async ( id : number ) => (
+    await prisma.trainerSession.findMany({
+        where : {
+            trainerId : id,
+        },
+    }));

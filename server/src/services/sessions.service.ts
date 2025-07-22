@@ -1,3 +1,4 @@
+import { config } from '../config';
 import prisma       from '../db/prisma';
 
 type  body = {
@@ -37,11 +38,39 @@ export const newSession = async ( body : body ) => {
 
 };
 
-export const getAllSession = async ( ) => (
-    await prisma.session.findMany({
+// export const getAllSession = async ( ) => (
+//     await prisma.session.findMany({
+//         orderBy: [
+//             { day: 'asc' }, 
+//             { startTime: 'asc' }, 
+//         ],
+//         include : {
+//             user : {
+//                 select : {
+//                     trainerId : true,
+//                 },
+//             },
+//         },
+//     }));
+
+export const getAllSession = async ( ) => {
+    let sessions = await prisma.session.findMany({
         orderBy: [
             { day: 'asc' }, 
             { startTime: 'asc' }, 
         ],
-    })
-);
+        include : {
+            user : {
+                select : {
+                    trainerId : true,
+                },
+            },
+        },
+    });
+
+    return sessions.map(session => ({
+        ...session,
+        status_basic: session.user.length > config.capacity_basic ? 'over_capacity' : 'available',
+        status_vip: session.user.length > config.capacity_vip ? 'over_capacity' : 'available',
+    }));
+};

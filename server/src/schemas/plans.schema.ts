@@ -2,7 +2,7 @@
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 import z                        from 'zod';
 
-import { dailySlots }           from '../config';
+// import { dailySlots }           from '../config';
 extendZodWithOpenApi(z);
 
 
@@ -18,7 +18,7 @@ export const createNewPlansSchema = z.object({
     duration :  z.number().min(1).max(12).openapi({
         description : 'Number of months',
     }),
-    seance : z.number().gte(1).max( dailySlots.length ),
+    seance : z.number().gte(1).max( 1 ),
 
 }).strict();
 

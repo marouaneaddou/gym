@@ -1,9 +1,7 @@
 
 import 'dotenv/config';
 
-import prisma from '../db/prisma';
 import { Config } from '../types';
-import { daysOfWeek } from '../utils';
 import { AppError } from '../utils/appError';
 
 export const config : Config = {
@@ -76,23 +74,23 @@ function createSlots(openTime: string, closeTime: string, slotDuration: number):
     return slots;
 }
 
-export const dailySlots = createSlots(config.open, config.closed, config.slotDuration);
+// export const dailySlots = createSlots(config.open, config.closed, config.slotDuration);
 // console.error( dailySlots );
-export const createTempleteSlot = async () => {
-    const count = await prisma.slotTemplate.count({
+// export const createTempleteSlot = async () => {
+//     const count = await prisma.slotTemplate.count({
 
-    });
-    if ( count > 0 ) return;
-    // const dailySlots = createSlots(config.open, config.closed, config.slotDuration);
-    const templateSlots = daysOfWeek.flatMap(day => dailySlots.map(slot => ({
-        dayOfWeek: day,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        capacityBasic : config.capacity_basic,
-        capacityVip : config.capacity_vip,
-    })));
-    await prisma.slotTemplate.createMany({
-        data : templateSlots,
-    });
-    console.error( templateSlots );
-};
+//     });
+//     if ( count > 0 ) return;
+//     // const dailySlots = createSlots(config.open, config.closed, config.slotDuration);
+//     const templateSlots = daysOfWeek.flatMap(day => dailySlots.map(slot => ({
+//         dayOfWeek: day,
+//         startTime: slot.startTime,
+//         endTime: slot.endTime,
+//         capacityBasic : config.capacity_basic,
+//         capacityVip : config.capacity_vip,
+//     })));
+//     await prisma.slotTemplate.createMany({
+//         data : templateSlots,
+//     });
+//     console.error( templateSlots );
+// };

@@ -3,7 +3,7 @@ import Route                from 'express';
 
 import { addUserToSession, getAllMmber, 
     getAllPaymentUser,
-    getSlotsUser,
+    getSessionsUser,
     newMember }             from '../controllers/members.controller';
 import { validatorBody, 
     validatorParam, 
@@ -19,7 +19,7 @@ const router = Route();
 
 router.get('/', tryCatch( getAllMmber ));
 router.get('/:id/payments', validatorParam( requestById ), tryCatch( getAllPaymentUser ));
-router.get('/:id/slots', validatorParam( requestById ), validatorQuery(queryLatestSlot), tryCatch( getSlotsUser ));
+router.get('/:id/session', validatorParam( requestById ), validatorQuery(queryLatestSlot), tryCatch( getSessionsUser ));
 router.post('/', validatorBody( memberSchemas ), tryCatch( newMember ));
 router.post('/:id/sessions', validatorParam( requestById ), validatorBody( userSessions), tryCatch( addUserToSession ) );
 

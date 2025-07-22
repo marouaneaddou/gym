@@ -10,7 +10,7 @@ import {
     createUser, 
     getAllPayment, 
     getPLanData,
-    latestDate,
+    getSessionUser,
     newPayment, 
     saveDbUserSession, 
     userById, 
@@ -103,6 +103,7 @@ export const addUserToSession = async ( req : Request, res : Response ) => {
     if ( body.length != plan.max_days_per_week ) {
         throw new AppError( 'Invalid session count in week', StatusCodes.BAD_REQUEST );
     }
+    
     await saveDbUserSession( user.id, body, plan.is_vip );
 
     res.status( StatusCodes.CREATED ).json({
@@ -122,36 +123,37 @@ export const getAllPaymentUser = async (  req : Request, res : Response ) => {
     return res.status( StatusCodes.OK).json( payment );
 };
 
-export const getSlotsUser = async ( req : Request, res : Response ) => {
+export const getSessionsUser = async ( req : Request, res : Response ) => {
     const id = Number(req.params.id);
 
     const user = await userById( id );
     if ( !user ) 
         throw new AppError( 'User not found', 404 );
 
-    let date;
+    const sessionUser = await getSessionUser( id );
+    // let date;
 
-    if ( req.query.latestMembership && req.query.latestMembership === 'true' ) {
-        const membersheep = await latestDate( id );
-        date = membersheep?.date;
-    }
-    console.error( date );
-    const userSLot = await prisma.userSlot.findMany({
-        where : {
-            date : date,
-            userId : id,
-        },
-        select : {
-            slotTemplate : {
-                select : {
-                    dayOfWeek : true,
-                    startTime : true,
-                    endTime     : true,
-                },
-            },
-            isVip : true,
-        },
-    });
-    return res.status( StatusCodes.OK).json( userSLot );
+    // if ( req.query.latestMembership && req.query.latestMembership === 'true' ) {
+    //     const membersheep = await latestDate( id );
+    //     date = membersheep?.date;
+    // }
+    // console.error( date );
+    // const userSLot = await prisma.userSlot.findMany({
+    //     where : {
+    //         date : date,
+    //         userId : id,
+    //     },
+    //     select : {
+    //         slotTemplate : {
+    //             select : {
+    //                 dayOfWeek : true,
+    //                 startTime : true,
+    //                 endTime     : true,
+    //             },
+    //         },
+    //         isVip : true,
+    //     },
+    // });
+    return res.status( StatusCodes.OK).json( sessionUser );
     // res.send("test")
 };

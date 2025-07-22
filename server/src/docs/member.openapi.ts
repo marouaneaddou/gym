@@ -1,8 +1,9 @@
 
 import z                            from 'zod';
 
-import { createNewMemberBody, queryLatestSlot }      from '../schemas/members.schema';
-import { requestById } from '../utils/schema.util';
+import {  
+    memberSchemas }               from '../schemas/members.schema';
+import { requestById }              from '../utils/schema.util';
 import { registry }                 from './setup';
 
 registry.registerPath({
@@ -15,7 +16,7 @@ registry.registerPath({
         body : {
             content : {
                 'application/json' : {
-                    schema : createNewMemberBody,
+                    schema : memberSchemas,
                 },
             },
         },
@@ -118,27 +119,28 @@ registry.registerPath({
 
 registry.registerPath({
     method: 'get',
-    path: '/api/:id/slots',
-    description: 'Get all slots of user member or lasted slots',
-    summary: 'all slots or lasted slots',
+    path: '/api/members/:id/session',
+    description: 'Get user session booked',
+    summary: 'Session user',
     tags : ['Members'],
     request : {
         params : requestById,
-        query : queryLatestSlot,
+        // query : queryLatestSlot,
     },
     responses: {
         200: {
-            description: 'Get all slots successfully',
+            description: 'Get all session successfully',
             content : {
                 'application/json' : {
                     schema : z.array(
                         z.object({
-                            slotTemplate : z.object({
-                                dayOfWeek   : z.string(),
-                                startTime   : z.string(),
-                                endTime     : z.string(),
-                            }),
-                            isVip: z.boolean(),
+                            trainerId   :   z.number().gte(1),
+                            sessionId   :   z.number().gte(1),
+                            day         :   z.string(), 
+                            is_vip      :   z.boolean(), 
+                            status      :   z.string(),  
+                            createdAt   :   z.number().gte(1),
+                            updatedAt   :   z.string(),
                         }),
                     ),
                 },

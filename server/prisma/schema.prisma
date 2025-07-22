@@ -61,7 +61,7 @@ model User {
   gender        gender 
   nationalId    String         @unique  
   memberships   Membership[] 
-  userSlots     UserSlot[]   
+  // userSlots     UserSlot[]   
   session       TrainerSession[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -97,11 +97,18 @@ model TrainerSession {
   trainerId Int
   sessionId Int
   createdAt DateTime @default(now())
+  updatedAt    DateTime         @updatedAt
   day       Day
   trainer   User  @relation(fields: [trainerId], references: [id])
   session   Session  @relation(fields: [sessionId], references: [id])
   is_vip    Boolean
+  status    enumTrainerSession  @default( active )
   @@id([trainerId, sessionId]) 
+}
+
+enum enumTrainerSession {
+  active 
+  desactive
 }
 // 
 model Membership {
@@ -135,27 +142,27 @@ model Payment {
   paymentDate   DateTime     @default(now())
 }
 
-model SlotTemplate {
-  id            Int        @id @default(autoincrement())
-  dayOfWeek     String     
-  startTime     String     
-  endTime       String     
-  capacityBasic Int
-  capacityVip   Int
-  userSlots     UserSlot[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-}
+// model SlotTemplate {
+//   id            Int        @id @default(autoincrement())
+//   dayOfWeek     String     
+//   startTime     String     
+//   endTime       String     
+//   capacityBasic Int
+//   capacityVip   Int
+//   userSlots     UserSlot[]
+//   createdAt     DateTime        @default(now())
+//   updatedAt     DateTime        @updatedAt
+// }
 
-model UserSlot {
-  id             Int          @id @default(autoincrement())
-  userId         Int
-  slotTemplateId Int
-  date           DateTime     // The actual date user booked
-  user           User         @relation(fields: [userId], references: [id])
-  isVip          Boolean
-  slotTemplate   SlotTemplate @relation(fields: [slotTemplateId], references: [id])
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-}
+// model UserSlot {
+//   id             Int          @id @default(autoincrement())
+//   userId         Int
+//   slotTemplateId Int
+//   date           DateTime     // The actual date user booked
+//   user           User         @relation(fields: [userId], references: [id])
+//   isVip          Boolean
+//   slotTemplate   SlotTemplate @relation(fields: [slotTemplateId], references: [id])
+//   createdAt      DateTime        @default(now())
+//   updatedAt      DateTime        @updatedAt
+// }
 
